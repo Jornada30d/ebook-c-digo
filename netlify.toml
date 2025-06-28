@@ -9,19 +9,29 @@
   node_bundler = "esbuild"
 
 # --- REGRAS DE REDIRECIONAMENTO ---
-# Esta é a nova forma que estamos usando.
+# A ordem aqui é importante.
 
-# Regra 1: Se um usuário NÃO estiver logado...
+# Regra 1: Redireciona para o login se o usuário tentar acessar a área protegida
+# e NÃO tiver a permissão (role) de "member".
 [[redirects]]
   from = "/desafio/*"
   to = "/login/"
   status = 302
   force = true
-  conditions = {Role = ["!member"]} # Redireciona se o usuário NÃO tem a role "member"
+  conditions = {Role = ["!member"]}
 
-# Regra 2: Se um usuário ESTIVER logado...
+# Regra 2: Permite que usuários logados com a permissão "member" acessem o conteúdo.
+# Isso serve o arquivo /desafio/index.html sem mudar a URL no navegador.
 [[redirects]]
   from = "/desafio/*"
   to = "/desafio/index.html"
   status = 200
+  force = true
+
+# Regra 3 (Bônus de Segurança): Se alguém acessar a raiz do site (seusite.com/),
+# redireciona para a página de login também.
+[[redirects]]
+  from = "/"
+  to = "/login/"
+  status = 302
   force = true
