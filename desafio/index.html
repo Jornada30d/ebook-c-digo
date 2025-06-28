@@ -11,11 +11,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desafio 30 Dias: Guia Interativo</title>
+    <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Script do Netlify Identity, necessário para o logout -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Estilos -->
     <style>
         body { font-family: 'Inter', sans-serif; }
         .view { display: none; }
@@ -79,6 +84,8 @@
                         <a href="#" data-view="nutrition" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Nutrição</a>
                         <a href="#" data-view="workout" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Treino</a>
                         <a href="#" data-view="sustainability" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Sustentabilidade</a>
+                        <!-- Botão Sair adicionado -->
+                        <button id="logout-button" class="ml-4 px-3 py-2 rounded-md text-sm font-medium text-red-400 hover:bg-red-500 hover:text-white transition-colors">Sair</button>
                     </div>
                 </div>
                  <div class="md:hidden">
@@ -95,6 +102,8 @@
                 <a href="#" data-view="nutrition" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Nutrição</a>
                 <a href="#" data-view="workout" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Treino</a>
                 <a href="#" data-view="sustainability" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Sustentabilidade</a>
+                <!-- Botão Sair para o menu mobile -->
+                <button id="logout-button-mobile" class="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-red-500 hover:text-white transition-colors">Sair</button>
             </div>
         </div>
     </header>
@@ -138,11 +147,13 @@ const app = {
         this.bindEvents();
         this.render();
         this.checkInactivity();
+        this.handleAuth(); // Nova função para lidar com a autenticação
     },
     
+    // ... (todo o resto do seu código de loadInitialData, cacheDOMElements permanece igual) ...
     loadInitialData() {
         this.state.fiveWhys = JSON.parse(localStorage.getItem('fiveWhys')) || Array(5).fill("");
-        this.state.isEditingWhys = !this.state.fiveWhys.some(w => w.trim()); // Inicia em modo de edição se não houver "porquês" salvos
+        this.state.isEditingWhys = !this.state.fiveWhys.some(w => w.trim());
         this.state.dailyFeedback = JSON.parse(localStorage.getItem('dailyFeedback')) || {};
         this.state.weightHistory = JSON.parse(localStorage.getItem('weightHistory')) || [];
         this.state.hydrationHistory = JSON.parse(localStorage.getItem('hydrationHistory')) || [];
@@ -161,7 +172,11 @@ const app = {
         this.mobileMenu = document.getElementById('mobile-menu');
         this.genericModalContainer = document.getElementById('generic-modal');
         this.toastContainer = document.getElementById('toast-container');
+        // Cache dos botões de logout
+        this.logoutButton = document.getElementById('logout-button');
+        this.logoutButtonMobile = document.getElementById('logout-button-mobile');
     },
+
 
     bindEvents() {
         document.body.addEventListener('click', (e) => {
@@ -183,6 +198,31 @@ const app = {
             }
         });
         this.mobileMenuButton.addEventListener('click', () => this.mobileMenu.classList.toggle('hidden'));
+
+        // Eventos de clique para os botões de logout
+        const handleLogout = () => {
+            if (window.netlifyIdentity) {
+                window.netlifyIdentity.logout();
+            }
+        };
+
+        if (this.logoutButton) {
+            this.logoutButton.addEventListener('click', handleLogout);
+        }
+        if (this.logoutButtonMobile) {
+            this.logoutButtonMobile.addEventListener('click', handleLogout);
+        }
+    },
+    
+    // Nova função para lidar com a lógica de autenticação
+    handleAuth() {
+        if (window.netlifyIdentity) {
+            // Este evento é acionado quando o logout é concluído.
+            window.netlifyIdentity.on('logout', () => {
+                // Redireciona o usuário de volta para a página de login.
+                window.location.href = '/login/';
+            });
+        }
     },
 
     handleAction(action, id) {
