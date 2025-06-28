@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Acesso ao Desafio 30 Dias</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Carrega o Widget de Login da Netlify -->
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+      body { font-family: sans-serif; background-color: #111827; display: grid; place-content: center; min-height: 100vh; margin: 0; color: white; }
+      /* Estiliza o container do widget */
+      .container { max-width: 400px; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+      <h1 style="text-align: center;">Acesso à Jornada 30 Dias</h1>
+      <!-- O widget de login será inserido aqui -->
+      <div data-netlify-identity-menu></div>
+    </div>
+    <script type="text/javascript">
+      // Se o usuário já estiver logado, redireciona para a área de membros
+      if (netlifyIdentity.currentUser()) {
+        window.location.replace('/desafio/');
+      }
+    </script>
+</body>
+</html>

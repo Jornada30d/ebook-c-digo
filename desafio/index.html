@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "s3ppwgsp01");
+</script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio 30 Dias: Guia Interativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link.active { color: #10B981; border-bottom-color: #10B981; }
+        .modal-overlay { transition: opacity 0.3s ease-in-out; }
+        .achievement-card { transition: all 0.3s ease; border-width: 2px; }
+        .achievement-card.locked { filter: grayscale(90%); opacity: 0.6; }
+        .achievement-card.unlocked { border-color: #f59e0b; background-color: rgba(245, 158, 11, 0.05); }
+        .meal-option { cursor: pointer; text-decoration: underline; text-decoration-color: #10b981; text-underline-offset: 2px; }
+        .meal-option:hover { color: #10b981; }
+        .toast-notification {
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        .toast-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .history-item:hover .action-buttons {
+            opacity: 1;
+        }
+        input:checked + .toggle-bg:after {
+            transform: translateX(100%);
+        }
+        input:checked + .toggle-bg {
+            background-color: #10B981;
+        }
+        .habit-loop-item.active, .habit-loop-item:hover {
+            border-color: #10B981;
+            background-color: #1f2937;
+        }
+        .habit-content {
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .habit-content.active {
+            display: block;
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-40">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-emerald-500">Desafio 30 Dias</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#" data-view="home" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Início</a>
+                        <a href="#" data-view="calculators" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Calculadoras</a>
+                        <a href="#" data-view="progress" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Progresso</a>
+                        <a href="#" data-view="mindset" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Mente</a>
+                        <a href="#" data-view="nutrition" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Nutrição</a>
+                        <a href="#" data-view="workout" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Treino</a>
+                        <a href="#" data-view="sustainability" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-emerald-400 border-b-2 border-transparent">Sustentabilidade</a>
+                    </div>
+                </div>
+                 <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-emerald-600"><span class="sr-only">Abrir menu</span><svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg></button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" data-view="home" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Início</a>
+                <a href="#" data-view="calculators" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Calculadoras</a>
+                <a href="#" data-view="progress" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Progresso</a>
+                <a href="#" data-view="mindset" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Mente</a>
+                <a href="#" data-view="nutrition" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Nutrição</a>
+                <a href="#" data-view="workout" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Treino</a>
+                <a href="#" data-view="sustainability" class="nav-link block px-3 py-2 rounded-md text-base font-medium">Sustentabilidade</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <div id="home" class="view"></div>
+        <div id="calculators" class="view"></div>
+        <div id="progress" class="view"></div>
+        <div id="mindset" class="view"></div>
+        <div id="nutrition" class="view"></div>
+        <div id="workout" class="view"></div>
+        <div id="sustainability" class="view"></div>
+
+    </main>
+
+    <div id="generic-modal" class="modal-overlay hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4"></div>
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50"></div>
+
+<script>
+const app = {
+    init() {
+        this.state = {
+            currentView: 'home',
+            currentDay: 1,
+            objective: 'lose',
+            weightHistory: [],
+            hydrationHistory: [],
+            fiveWhys: Array(5).fill(""),
+            isEditingWhys: true, // Controla o modo de edição dos "porquês"
+            dailyFeedback: {},
+            unlockedAchievements: [],
+            visitedViews: new Set(['home']),
+            openedRecipes: new Set(),
+            activeHabit: null,
+            goalWeight: 65,
+            hydrationGoal: 2000 
+        };
+        this.loadInitialData();
+        this.cacheDOMElements();
+        this.bindEvents();
+        this.render();
+        this.checkInactivity();
+    },
+    
+    loadInitialData() {
+        this.state.fiveWhys = JSON.parse(localStorage.getItem('fiveWhys')) || Array(5).fill("");
+        this.state.isEditingWhys = !this.state.fiveWhys.some(w => w.trim()); // Inicia em modo de edição se não houver "porquês" salvos
+        this.state.dailyFeedback = JSON.parse(localStorage.getItem('dailyFeedback')) || {};
+        this.state.weightHistory = JSON.parse(localStorage.getItem('weightHistory')) || [];
+        this.state.hydrationHistory = JSON.parse(localStorage.getItem('hydrationHistory')) || [];
+        this.state.objective = localStorage.getItem('userObjective') || 'lose';
+        this.state.unlockedAchievements = JSON.parse(localStorage.getItem('unlockedAchievements')) || [];
+        this.state.visitedViews = new Set(JSON.parse(localStorage.getItem('visitedViews'))) || new Set(['home']);
+        this.state.openedRecipes = new Set(JSON.parse(localStorage.getItem('openedRecipes'))) || new Set();
+        this.state.goalWeight = parseFloat(localStorage.getItem('goalWeight')) || 65;
+        this.state.hydrationGoal = parseInt(localStorage.getItem('hydrationGoal'), 10) || 2000;
+    },
+
+    cacheDOMElements() {
+        this.navLinks = document.querySelectorAll('.nav-link');
+        this.views = document.querySelectorAll('.view');
+        this.mobileMenuButton = document.getElementById('mobile-menu-button');
+        this.mobileMenu = document.getElementById('mobile-menu');
+        this.genericModalContainer = document.getElementById('generic-modal');
+        this.toastContainer = document.getElementById('toast-container');
+    },
+
+    bindEvents() {
+        document.body.addEventListener('click', (e) => {
+            const navLink = e.target.closest('.nav-link');
+            if (navLink) {
+                e.preventDefault();
+                this.state.currentView = navLink.dataset.view;
+                this.state.visitedViews.add(this.state.currentView);
+                localStorage.setItem('visitedViews', JSON.stringify(Array.from(this.state.visitedViews)));
+                this.mobileMenu.classList.add('hidden');
+                this.render();
+                this.checkAchievements();
+                return;
+            }
+
+            const actionBtn = e.target.closest('[data-action]');
+            if(actionBtn) {
+                this.handleAction(actionBtn.dataset.action, actionBtn.dataset.id);
+            }
+        });
+        this.mobileMenuButton.addEventListener('click', () => this.mobileMenu.classList.toggle('hidden'));
+    },
+
+    handleAction(action, id) {
+        const actions = {
+            'toggleObjective': () => this.toggleObjective(),
+            'saveWeightGoal': () => this.saveWeightGoal(),
+            'saveHydrationGoal': () => this.saveHydrationGoal(),
+            'logDailyHydration': () => this.logDailyHydration(),
+            'showWorkoutDetail': () => this.showWorkoutDetail(id),
+            'saveDailyFeedback': () => this.saveDailyFeedback(id),
+            'showRecipe': () => this.showRecipe(id),
+            'closeModal': () => this.hideModals(),
+            'clearWeightHistory': () => this.clearHistory('weight'),
+            'clearHydrationHistory': () => this.clearHistory('hydration'),
+            'editWeight': () => this.editHistoryItem('weight', id),
+            'deleteWeight': () => this.deleteHistoryItem('weight', id),
+            'editHydration': () => this.editHistoryItem('hydration', id),
+            'deleteHydration': () => this.deleteHistoryItem('hydration', id),
+            'toggleFiveWhysEdit': () => this.toggleFiveWhysEdit(),
+            'toggleHabitContent': () => this.toggleHabitContent(id, document.getElementById('mindset')),
+        };
+        actions[action]?.();
+    },
+
+    render() {
+        this.views.forEach(view => view.classList.toggle('active', view.id === this.state.currentView));
+        this.navLinks.forEach(link => link.classList.toggle('active', link.dataset.view === this.state.currentView));
+        const viewPopulators = {
+            home: () => this.populateHomePage(),
+            calculators: () => this.populateCalculatorsPage(),
+            progress: () => this.populateProgressPage(),
+            mindset: () => this.populateMindsetPage(),
+            nutrition: () => this.populateNutritionPage(),
+            workout: () => this.populateWorkoutPage(),
+            sustainability: () => this.populateSustainabilityPage(),
+        };
+        viewPopulators[this.state.currentView]?.();
+        window.scrollTo(0, 0);
+    },
+
+    populateHomePage() { 
+        document.getElementById('home').innerHTML = this.createHomeHTML();
+        this.updateDashboard(); 
+        this.updateToggleUI(); 
+    },
+    populateCalculatorsPage() {
+        document.getElementById('calculators').innerHTML = this.createCalculatorsHTML();
+        this.updateWeightCalculator();
+        this.updateHydrationCalculator();
+        this.updateDailyHydrationStatus();
+    },
+    populateMindsetPage() { 
+        document.getElementById('mindset').innerHTML = this.createMindsetHTML();
+    },
+    populateNutritionPage() { 
+        document.getElementById('nutrition').innerHTML = this.createNutritionHTML();
+        this.populateNutritionTable(); 
+        this.createMacroChart(); 
+    },
+    populateWorkoutPage() { 
+        document.getElementById('workout').innerHTML = this.createWorkoutHTML(); 
+        this.populateWorkoutSchedule();
+        this.createEpocChart(); 
+    },
+    populateSustainabilityPage() { 
+        document.getElementById('sustainability').innerHTML = this.createSustainabilityHTML(); 
+    },
+    populateProgressPage() {
+        document.getElementById('progress').innerHTML = this.createProgressHTML();
+        this.renderHistoryList('weight');
+        this.renderHistoryList('hydration');
+        this.populateAchievementsPage();
+    },
+    populateAchievementsPage() {
+        const grid = document.getElementById('achievements-grid');
+        if(!grid) return;
+        grid.innerHTML = this.data.achievements.map(ach => {
+            const isUnlocked = this.state.unlockedAchievements.includes(ach.id);
+            return `<div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'} border-gray-700 rounded-lg p-4 flex items-center space-x-4"><div class="text-4xl">${ach.icon}</div><div><h4 class="font-bold text-lg ${isUnlocked ? 'text-amber-400' : 'text-gray-400'}">${ach.title}</h4><p class="text-sm text-gray-400">${ach.description}</p></div></div>`;
+        }).join('');
+    },
+
+    renderHistoryList(type) {
+        const container = document.getElementById(`${type}-history-list`);
+        if(!container) return;
+        const history = this.state[`${type}History`];
+        
+        if (history.length === 0) {
+            container.innerHTML = `<p class="text-gray-500 text-center p-4">Nenhum registro ainda.</p>`;
+            return;
+        }
+
+        container.innerHTML = history.map((item, index) => {
+            const value = type === 'weight' ? `${item.weight} kg` : `${item.glasses} copos`;
+            const icon = type === 'weight' ? '⚖️' : this.getWaterGlassIcon(item.glasses, true);
+            return `
+            <div class="history-item flex items-center justify-between p-2 bg-gray-900/50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl">${icon}</span>
+                    <div>
+                        <p class="font-semibold text-gray-200">${value}</p>
+                        <p class="text-xs text-gray-400">${new Date(item.date).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    </div>
+                </div>
+                <div class="action-buttons opacity-0 transition-opacity flex gap-2">
+                    <button data-action="edit${type.charAt(0).toUpperCase() + type.slice(1)}" data-id="${index}" class="text-sky-400 hover:text-sky-300">Editar</button>
+                    <button data-action="delete${type.charAt(0).toUpperCase() + type.slice(1)}" data-id="${index}" class="text-red-500 hover:text-red-400">Excluir</button>
+                </div>
+            </div>`;
+        }).join('');
+    },
+
+    editHistoryItem(type, index) {
+        const history = this.state[`${type}History`];
+        const item = history[index];
+        const isWeight = type === 'weight';
+        const title = `Editar Registro de ${isWeight ? 'Peso' : 'Hidratação'}`;
+        const content = `
+            <div>
+                <label for="edit-date" class="block text-sm font-medium text-gray-300">Data</label>
+                <input type="date" id="edit-date" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm p-2" value="${item.date}">
+            </div>
+            <div class="mt-4">
+                <label for="edit-value" class="block text-sm font-medium text-gray-300">${isWeight ? 'Peso (kg)' : 'Copos (250ml)'}</label>
+                <input type="number" id="edit-value" step="${isWeight ? '0.1' : '1'}" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm p-2" value="${isWeight ? item.weight : item.glasses}">
+            </div>
+        `;
+        const onSave = () => {
+            const newDate = document.getElementById('edit-date').value;
+            const newValue = document.getElementById('edit-value').value;
+            if (!newValue || !newDate) return;
+
+            if (isWeight) {
+                item.weight = parseFloat(newValue);
+            } else {
+                item.glasses = parseInt(newValue, 10);
+            }
+            item.date = newDate;
+            
+            history.sort((a, b) => new Date(b.date) - new Date(a.date));
+            this.saveHistory(type);
+            this.hideModals();
+            this.renderHistoryList(type);
+        };
+        this.showModal(title, content, onSave);
+    },
+
+    deleteHistoryItem(type, index) {
+        this.state[`${type}History`].splice(index, 1);
+        this.saveHistory(type);
+        this.renderHistoryList(type);
+    },
+    
+    clearHistory(type) {
+        this.showModal(
+            `Apagar Histórico de ${type === 'weight' ? 'Peso' : 'Hidratação'}`,
+            `<p class="text-gray-300">Tem certeza que deseja apagar todos os registros? Esta ação não pode ser desfeita.</p>`,
+            () => {
+                this.state[`${type}History`] = [];
+                this.saveHistory(type);
+                this.renderHistoryList(type);
+                this.hideModals();
+            },
+            "Sim, apagar tudo"
+        )
+    },
+    
+    saveHistory(type) {
+        localStorage.setItem(`${type}History`, JSON.stringify(this.state[`${type}History`]));
+    },
+
+    getWaterGlassIcon(count, small = false) {
+        const size = small ? "w-6 h-6" : "w-10 h-10";
+        if (count <= 0) return `<svg xmlns="http://www.w3.org/2000/svg" class="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L6 8v12h12V8l-6-6z"></path><path d="M6 8h12"></path></svg>`;
+        if (count <= 4) return `<svg xmlns="http://www.w3.org/2000/svg" class="${size} text-sky-400" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L6 8v12h12V8l-6-6z"></path><path d="M6 8h12"></path><path d="M12 13h0"></path></svg>`;
+        return `<svg xmlns="http://www.w3.org/2000/svg" class="${size} text-sky-400" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L6 8v12h12V8l-6-6z"></path><path d="M6 8h12"></path><path d="M12 13h0"></path><path d="M12 18h0"></path></svg>`;
+    },
+
+    showModal(title, content, onSave, saveButtonText = "Salvar") {
+        this.genericModalContainer.innerHTML = `
+            <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md border border-emerald-500/50">
+                <h3 class="text-2xl font-bold text-emerald-400 mb-4">${title}</h3>
+                <div id="modal-content">${content}</div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button data-action="closeModal" class="px-4 py-2 bg-gray-600 rounded-md text-white hover:bg-gray-500">Cancelar</button>
+                    <button id="modal-save-btn" class="px-4 py-2 bg-emerald-500 rounded-md text-white hover:bg-emerald-600">${saveButtonText}</button>
+                </div>
+            </div>`;
+        this.genericModalContainer.classList.remove('hidden');
+        document.getElementById('modal-save-btn').onclick = onSave;
+    },
+    hideModals() { this.genericModalContainer.classList.add('hidden'); },
+    
+    checkInactivity() {
+        const lastFeedbackDateStr = localStorage.getItem('lastFeedbackDate');
+        if (!lastFeedbackDateStr) return;
+        const lastFeedbackDate = new Date(lastFeedbackDateStr);
+        const today = new Date();
+        lastFeedbackDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        const diffDays = Math.ceil((today - lastFeedbackDate) / (1000 * 60 * 60 * 24));
+        if (diffDays >= 2) {
+             this.showModal(
+                'Estamos com saudades!',
+                `<p class="text-gray-300 mb-6">Percebemos que você esteve fora por um tempo. Lembre-se do seu "porquê" e que cada dia é uma nova chance para recomeçar. Não desista da sua jornada!</p><p class="text-gray-400 text-sm">Um pequeno passo hoje é um grande salto para o seu objetivo.</p>`,
+                () => this.hideModals(),
+                "Estou de Volta!"
+            );
+        }
+    },
+    showToastNotification(achievement) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification bg-amber-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-3';
+        toast.innerHTML = `<span class="text-2xl">${achievement.icon}</span><div><p class="font-bold">${achievement.title}</p>${achievement.description ? `<p class="text-sm">${achievement.description}</p>`: ''}</div>`;
+        this.toastContainer.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 5000);
+    },
+    showRecipe(recipeKey) {
+        const recipe = this.data.recipes[recipeKey];
+        if(!recipe) return;
+
+        const content = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-white mb-2">Ingredientes:</h4>
+                    <ul class="list-disc list-inside text-gray-300 space-y-1">${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-2">Modo de Preparo:</h4>
+                    <ol class="list-decimal list-inside text-gray-300 space-y-2">${recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+                </div>
+            </div>`;
+        
+        this.showModal(recipe.title, content, () => this.hideModals(), "Fechar");
+        
+        this.state.openedRecipes.add(recipeKey);
+        localStorage.setItem('openedRecipes', JSON.stringify(Array.from(this.state.openedRecipes)));
+        this.checkAchievements();
+    },
+
+    saveWeightGoal() {
+        const currentWeightInput = document.getElementById('calc-current-weight');
+        const goalWeightInput = document.getElementById('calc-goal-weight');
+        if (!currentWeightInput || !goalWeightInput) return;
+
+        const currentWeight = parseFloat(currentWeightInput.value);
+        const goalWeight = parseFloat(goalWeightInput.value);
+
+        if (isNaN(currentWeight) || isNaN(goalWeight)) {
+            this.showToastNotification({icon: '⚠️', title: 'Valores inválidos!'});
+            return;
+        }
+        
+        this.state.goalWeight = goalWeight;
+        localStorage.setItem('goalWeight', goalWeight);
+        
+        const today = new Date().toISOString().slice(0, 10);
+        const todayEntry = this.state.weightHistory.find(h => h.date === today);
+        if (todayEntry) {
+            todayEntry.weight = currentWeight;
+        } else {
+            this.state.weightHistory.unshift({ date: today, weight: currentWeight });
+        }
+        this.state.weightHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+        this.saveHistory('weight');
+
+        this.updateWeightCalculator();
+        this.showToastNotification({icon: '⚖️', title: 'Meta de peso salva!'});
+        this.checkAchievements();
+    },
+    updateWeightCalculator() {
+        const container = document.getElementById('weight-calculator-result');
+        if (!container) return;
+
+        const currentWeight = this.state.weightHistory[0]?.weight || 0;
+        const goalWeight = this.state.goalWeight;
+        
+        const currentWeightInput = document.getElementById('calc-current-weight');
+        if(currentWeightInput) currentWeightInput.value = currentWeight || '';
+        const goalWeightInput = document.getElementById('calc-goal-weight');
+        if(goalWeightInput) goalWeightInput.value = goalWeight || '';
+
+        const difference = Math.abs(currentWeight - goalWeight).toFixed(1);
+        let message = '';
+
+        if (currentWeight === 0) {
+            message = `<p class="text-gray-400">Insira seu peso atual para começar.</p>`;
+        } else if (currentWeight === goalWeight) {
+            message = `<p class="text-emerald-400 font-bold text-lg">🎉 Você atingiu sua meta! Parabéns!</p>`;
+        } else if (currentWeight > goalWeight) {
+            message = `<p class="text-gray-300">Faltam <span class="font-bold text-2xl text-yellow-400">${difference} kg</span> para você atingir sua meta de perda de peso.</p>`;
+        } else {
+            message = `<p class="text-gray-300">Faltam <span class="font-bold text-2xl text-yellow-400">${difference} kg</span> para você atingir sua meta de ganho de peso.</p>`;
+        }
+        container.innerHTML = message;
+    },
+
+    saveHydrationGoal() {
+        const weightInput = document.getElementById('calc-hydration-weight');
+        if (!weightInput) return;
+        const weight = parseFloat(weightInput.value);
+        if (isNaN(weight) || weight <= 0) {
+            this.showToastNotification({icon: '⚠️', title: 'Peso inválido!'});
+            return;
+        }
+        const goal = Math.round(weight * 35);
+        this.state.hydrationGoal = goal;
+        localStorage.setItem('hydrationGoal', goal);
+        this.updateHydrationCalculator();
+        this.showToastNotification({icon: '💧', title: 'Meta de hidratação salva!'});
+    },
+
+    updateHydrationCalculator() {
+        const container = document.getElementById('hydration-calculator-result');
+        if (!container) return;
+        
+        const goal = this.state.hydrationGoal;
+        const glasses = Math.round(goal / 250);
+
+        const weightInput = document.getElementById('calc-hydration-weight');
+        if(weightInput) {
+            weightInput.value = this.state.weightHistory[0]?.weight || '';
+        }
+
+        container.innerHTML = `
+            <p class="text-gray-300">Sua meta diária é de <span class="font-bold text-2xl text-sky-400">${goal} ml</span>.</p>
+            <p class="text-gray-400">Isso equivale a aproximadamente <span class="font-bold text-xl text-sky-400">${glasses}</span> copos de 250ml.</p>
+        `;
+    },
+
+    logDailyHydration() {
+        const input = document.getElementById('hydration-log-input');
+        if (!input) return;
+        const glasses = parseInt(input.value, 10);
+        if (isNaN(glasses) || glasses <= 0) {
+            this.showToastNotification({icon: '⚠️', title: 'Valor inválido!'});
+            return;
+        }
+
+        const today = new Date().toISOString().slice(0, 10);
+        let todayEntry = this.state.hydrationHistory.find(h => h.date === today);
+
+        if (todayEntry) {
+            todayEntry.glasses += glasses;
+        } else {
+            todayEntry = { date: today, glasses: glasses };
+            this.state.hydrationHistory.unshift(todayEntry);
+        }
+        
+        this.state.hydrationHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+        this.saveHistory('hydration');
+        input.value = '';
+        this.showToastNotification({icon: '💧', title: `${glasses} copo(s) adicionado(s)!`});
+        this.updateDailyHydrationStatus();
+        this.checkAchievements();
+    },
+
+    updateDailyHydrationStatus() {
+        const container = document.getElementById('daily-hydration-status');
+        if (!container) return;
+
+        const today = new Date().toISOString().slice(0, 10);
+        const todayEntry = this.state.hydrationHistory.find(h => h.date === today);
+        const consumedMl = (todayEntry?.glasses || 0) * 250;
+        const goalMl = this.state.hydrationGoal;
+        const remainingMl = Math.max(0, goalMl - consumedMl);
+        const remainingGlasses = Math.ceil(remainingMl / 250);
+        
+        if (remainingMl === 0) {
+            container.innerHTML = `<p class="font-bold text-lg text-emerald-400">🎉 Parabéns! Você bateu sua meta de hidratação hoje!</p>`;
+        } else {
+            container.innerHTML = `<p class="text-gray-300">Você já tomou <span class="font-bold text-sky-400">${consumedMl}ml</span>. Faltam <span class="font-bold text-sky-400">${remainingMl}ml</span> (${remainingGlasses} copos) para atingir sua meta.</p>`;
+        }
+    },
+
+    saveDailyFeedback(status) {
+        this.state.dailyFeedback[this.state.currentDay] = status;
+        localStorage.setItem('dailyFeedback', JSON.stringify(this.state.dailyFeedback));
+        localStorage.setItem('lastFeedbackDate', new Date().toISOString());
+        this.updateDashboard();
+        this.checkAchievements();
+    },
+
+    checkAchievements() {
+        this.data.achievements.forEach(ach => {
+            if (!this.state.unlockedAchievements.includes(ach.id) && ach.condition(this.state)) {
+                this.state.unlockedAchievements.push(ach.id);
+                localStorage.setItem('unlockedAchievements', JSON.stringify(this.state.unlockedAchievements));
+                this.showToastNotification(ach);
+                if (this.state.currentView === 'progress') this.populateAchievementsPage();
+            }
+        });
+    },
+    
+    updateDashboard() {
+        const homeView = document.getElementById('home');
+        if(!homeView || !homeView.classList.contains('active')) return;
+
+        document.querySelectorAll('#today-day').forEach(span => span.textContent = this.state.currentDay);
+        const { nutritionText } = this.getObjectiveTipText();
+        document.getElementById('objective-tip-nutrition').innerHTML = nutritionText;
+        const dietPlan = this.data.nutrition[this.state.objective];
+        const dayIndex = (this.state.currentDay - 1) % this.data.workout.schedule.length;
+        const mealOptionIndex = dayIndex % 4;
+        let nutritionHTML = '';
+        dietPlan.meals.forEach(mealName => {
+            const mealKey = mealName.toLowerCase().split(' ')[0];
+            const mealOption = dietPlan.options[mealKey] ? dietPlan.options[mealKey][mealOptionIndex] : {name: "Opção livre"};
+            nutritionHTML += `<p><strong>${mealName}:</strong> ${mealOption.key ? `<span class="meal-option" data-action="showRecipe" data-id="${mealOption.key}">${mealOption.name}</span>` : mealOption.name}</p>`;
+        });
+        document.getElementById('today-nutrition').innerHTML = nutritionHTML;
+        const workoutPlan = this.data.workout.schedule[dayIndex];
+        document.getElementById('today-workout').innerHTML = `<p><strong>Foco:</strong> ${this.data.workout.details[workoutPlan].title}</p><p>${this.data.workout.details[workoutPlan].description}</p>`;
+        const feedbackForToday = this.state.dailyFeedback[this.state.currentDay];
+        document.getElementById('feedback-buttons').classList.toggle('hidden', !!feedbackForToday);
+        document.getElementById('feedback-saved-message').classList.toggle('hidden', !feedbackForToday);
+        if(feedbackForToday) document.getElementById('feedback-day-saved').textContent = this.state.currentDay;
+    },
+
+    showWorkoutDetail(day) { this.state.currentDay = Number(day); this.state.currentView = 'home'; this.render(); },
+    
+    getObjectiveTipText() {
+        if (this.state.objective === 'gain') {
+            return {
+                nutritionText: "<strong>Dica para Ganho de Peso:</strong> Adicione porções extras de carboidratos e proteínas em todas as refeições.",
+                workoutText: "<strong>Foco em Hipertrofia:</strong> Priorize treinos de força com execução controlada e tente aumentar a carga."
+            };
+        }
+        return {
+            nutritionText: "<strong>Dica para Perda de Peso:</strong> Mantenha o foco em proteínas magras e vegetais para garantir saciedade.",
+            workoutText: "<strong>Foco em Queima de Gordura:</strong> O HIIT é seu maior aliado para acelerar o metabolismo. Dê o seu máximo!"
+        };
+    },
+    toggleObjective() {
+        this.state.objective = this.state.objective === 'lose' ? 'gain' : 'lose';
+        localStorage.setItem('userObjective', this.state.objective);
+        this.updateToggleUI();
+        this.updateDashboard();
+    },
+    updateToggleUI() {
+        const toggle = document.getElementById('objective-toggle');
+        if (!toggle) return;
+        const isGain = this.state.objective === 'gain';
+        toggle.checked = isGain;
+        document.getElementById('lose-weight-label').classList.toggle('text-emerald-500', !isGain);
+        document.getElementById('lose-weight-label').classList.toggle('text-gray-400', isGain);
+        document.getElementById('gain-weight-label').classList.toggle('text-emerald-500', isGain);
+        document.getElementById('gain-weight-label').classList.toggle('text-gray-400', !isGain);
+    },
+    createMacroChart() { 
+        const ctx = document.getElementById('macro-chart')?.getContext('2d'); 
+        if(!ctx) return;
+        if(window.macroChartInstance) window.macroChartInstance.destroy(); 
+        window.macroChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Proteínas', 'Carboidratos', 'Gorduras'], datasets: [{ data: [30, 45, 25], backgroundColor: ['#10B981', '#34D399', '#6EE7B7'], borderColor: '#1f2937' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: '#d1d5db' } } } } }); 
+    },
+    createEpocChart() { 
+        const ctx = document.getElementById('epoc-chart')?.getContext('2d'); 
+        if(!ctx) return;
+        if(window.epocChartInstance) window.epocChartInstance.destroy(); 
+        window.epocChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ['Cardio Contínuo', 'HIIT'], datasets: [ { label: 'Durante Treino', data: [250, 200], backgroundColor: '#34D399' }, { label: 'Pós-Treino (EPOC)', data: [30, 150], backgroundColor: '#10B981' } ] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, title: { display: true, text: 'Calorias Queimadas' } } }, plugins: { legend: { position: 'top' } } } }); 
+    },
+
+    toggleHabitContent(habitKey, container) {
+        if (!container) return;
+        const contentContainer = container.querySelector('#habit-loop-content-container');
+        const currentActive = container.querySelector('.habit-loop-item.active');
+        if (currentActive && currentActive.dataset.id === habitKey) {
+            currentActive.classList.remove('active');
+            contentContainer.innerHTML = '';
+            this.state.activeHabit = null;
+        } else {
+            currentActive?.classList.remove('active');
+            const newActive = container.querySelector(`[data-id="${habitKey}"]`);
+            newActive.classList.add('active');
+            const habitData = this.data.mindset.find(i => i.id === 'habitLoop').items[habitKey];
+            contentContainer.innerHTML = `<div class="habit-content active p-4 border-2 border-emerald-500/50 rounded-lg mt-4 bg-gray-800"><h5 class="font-bold text-lg text-emerald-500">${habitData.title}</h5><p class="mt-2 text-gray-300">${habitData.description}</p></div>`;
+            this.state.activeHabit = habitKey;
+        }
+    },
+    
+    toggleFiveWhysEdit() {
+        if (this.state.isEditingWhys) {
+            // Estava editando, agora vai salvar
+            const container = document.getElementById('mindset');
+            if (!container) return;
+            container.querySelectorAll('.why-input').forEach((input, i) => {
+                this.state.fiveWhys[i] = input.value;
+            });
+            localStorage.setItem('fiveWhys', JSON.stringify(this.state.fiveWhys));
+            this.state.isEditingWhys = false; // Muda para o modo de visualização
+            this.showToastNotification({icon: '🧠', title: 'Seus "porquês" foram salvos!'});
+        } else {
+            // Estava visualizando, agora vai editar
+            this.state.isEditingWhys = true; // Muda para o modo de edição
+        }
+        // Re-renderiza a página da mente para refletir a mudança
+        this.populateMindsetPage();
+    },
+
+    populateNutritionTable() {
+        const head = document.getElementById('nutrition-table-head');
+        const body = document.getElementById('nutrition-table-body');
+        if(!head || !body) return;
+        
+        const diet = this.data.nutrition[this.state.objective];
+        head.innerHTML = `<tr><th class="p-3">Refeição</th><th class="p-3">Opção 1</th><th class="p-3">Opção 2</th><th class="p-3">Opção 3</th><th class="p-3">Opção 4</th></tr>`;
+        body.innerHTML = diet.meals.map(meal => {
+            const mealKey = meal.toLowerCase().split(' ')[0];
+            const options = diet.options[mealKey] || [];
+            return `<tr class="border-b border-gray-700"><td class="p-3 font-semibold">${meal}</td>${[0,1,2,3].map(i => `<td class="p-3">${options[i] ? (options[i].key ? `<span class="meal-option" data-action="showRecipe" data-id="${options[i].key}">${options[i].name}</span>` : options[i].name) : '—'}</td>`).join('')}</tr>`;
+        }).join('');
+    },
+    
+    populateWorkoutSchedule() {
+        const container = document.getElementById('workout-schedule');
+        if(!container) return;
+        const feedbackColors = { all_done: 'bg-emerald-500', only_workout: 'bg-sky-500', only_diet: 'bg-orange-500', skipped: 'bg-red-500' };
+        container.innerHTML = this.data.workout.schedule.map((plan, i) => {
+            const day = i + 1;
+            const details = this.data.workout.details[plan];
+            let bgColor = details.title.includes('Descanso') ? 'bg-gray-700/50' : 'bg-gray-800';
+            const feedback = this.state.dailyFeedback[day];
+            const dot = feedback ? `<div class="absolute bottom-1 right-1 h-2.5 w-2.5 rounded-full ${feedbackColors[feedback]}"></div>` : '';
+            return `<div class="relative p-2 border border-gray-600 rounded cursor-pointer ${bgColor} hover:bg-gray-700" data-action="showWorkoutDetail" data-id="${day}"><span class="font-bold block text-sm pointer-events-none">Dia ${day}</span><span class="text-xs text-gray-400 pointer-events-none">${details.title}</span>${dot}</div>`;
+        }).join('');
+    },
+
+    // HTML Generation
+    createHomeHTML() {
+        return `
+            <div class="text-center mb-6"><h2 class="text-3xl md:text-4xl font-bold text-white">Foco do Dia</h2><p class="mt-4 max-w-2xl mx-auto text-lg text-gray-400">Sua missão de hoje. Clique em um dia no calendário de treinos para mudar o foco.</p></div>
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg"><div class="flex justify-between items-center mb-4 flex-wrap gap-4"><h3 class="text-2xl font-bold text-white">Dia <span id="today-day">1</span></h3><div class="flex items-center justify-center space-x-3"><span id="lose-weight-label" class="font-semibold text-emerald-500 text-sm">Perder Peso</span><label class="flex items-center cursor-pointer"><div class="relative"><input type="checkbox" id="objective-toggle" data-action="toggleObjective" class="sr-only"><div class="block bg-gray-600 w-10 h-6 rounded-full toggle-bg relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition after:shadow-sm"></div></div></label><span id="gain-weight-label" class="font-medium text-gray-400 text-sm">Ganhar Peso</span></div></div><div id="objective-tip-nutrition" class="mb-4 p-3 bg-emerald-500/20 border-l-4 border-emerald-500 rounded-r-lg"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div><h4 class="text-xl font-semibold mb-2 text-emerald-500">Nutrição de Hoje</h4><div id="today-nutrition" class="space-y-2 text-gray-400"></div></div><div><h4 class="text-xl font-semibold mb-2 text-emerald-500">Treino de Hoje</h4><div id="today-workout" class="space-y-2 text-gray-400"></div></div></div><div class="border-t border-gray-700 mt-6 pt-6"><h4 class="text-xl font-semibold mb-4 text-center text-white">Como foi o seu dia?</h4><div id="daily-feedback-container"><div id="feedback-buttons" class="grid grid-cols-2 md:grid-cols-4 gap-4"><button data-action="saveDailyFeedback" data-id="all_done" class="feedback-btn flex flex-col items-center justify-center p-3 bg-emerald-500 rounded-lg shadow-lg"><span class="text-2xl">✅</span><span class="font-semibold mt-1">Tudo Certo!</span></button><button data-action="saveDailyFeedback" data-id="only_workout" class="feedback-btn flex flex-col items-center justify-center p-3 bg-sky-500 rounded-lg shadow-lg"><span class="text-2xl">💪</span><span class="font-semibold mt-1">Só Treino</span></button><button data-action="saveDailyFeedback" data-id="only_diet" class="feedback-btn flex flex-col items-center justify-center p-3 bg-orange-500 rounded-lg shadow-lg"><span class="text-2xl">🥗</span><span class="font-semibold mt-1">Só Dieta</span></button><button data-action="saveDailyFeedback" data-id="skipped" class="feedback-btn flex flex-col items-center justify-center p-3 bg-red-500 rounded-lg shadow-lg"><span class="text-2xl">😕</span><span class="font-semibold mt-1">Hoje não deu</span></button></div><div id="feedback-saved-message" class="hidden text-center p-4 bg-gray-700 rounded-lg"><p class="font-semibold text-lg text-emerald-400">Feedback salvo para o dia <span id="feedback-day-saved"></span>!</p><p class="text-gray-400">Bom trabalho! Continue assim.</p></div></div></div></div>`;
+    },
+    createCalculatorsHTML() {
+        return `
+            <div class="text-center mb-6"><h2 class="text-3xl md:text-4xl font-bold text-white">Calculadoras</h2><p class="mt-4 max-w-2xl mx-auto text-lg text-gray-400">Defina suas metas e planeje sua jornada.</p></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-white mb-4">Meta de Peso</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="calc-current-weight" class="text-sm font-semibold text-gray-400">Seu Peso Atual (kg)</label>
+                            <input type="number" id="calc-current-weight" step="0.1" class="w-full mt-1 p-2 border border-gray-600 bg-gray-700 text-gray-200 rounded" placeholder="Ex: 70.5">
+                        </div>
+                        <div>
+                            <label for="calc-goal-weight" class="text-sm font-semibold text-gray-400">Sua Meta de Peso (kg)</label>
+                            <input type="number" id="calc-goal-weight" step="0.1" class="w-full mt-1 p-2 border border-gray-600 bg-gray-700 text-gray-200 rounded" placeholder="Ex: 65">
+                        </div>
+                        <button data-action="saveWeightGoal" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded">Salvar e Calcular</button>
+                    </div>
+                    <div id="weight-calculator-result" class="mt-4 text-center p-4 bg-gray-900/50 rounded-lg min-h-[60px]"></div>
+                </div>
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-white mb-4">Meta de Hidratação</h3>
+                     <div class="space-y-4">
+                        <div>
+                            <label for="calc-hydration-weight" class="text-sm font-semibold text-gray-400">Seu Peso Atual (kg)</label>
+                            <input type="number" id="calc-hydration-weight" step="0.1" class="w-full mt-1 p-2 border border-gray-600 bg-gray-700 text-gray-200 rounded" placeholder="Use o mesmo peso da outra calculadora">
+                        </div>
+                         <button data-action="saveHydrationGoal" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded">Calcular Minha Meta de Água</button>
+                    </div>
+                    <div id="hydration-calculator-result" class="mt-4 text-center p-4 bg-gray-900/50 rounded-lg min-h-[60px]"></div>
+                     <div class="mt-6 border-t border-gray-700 pt-4">
+                        <h4 class="text-lg font-semibold text-white mb-2">Registro de Hoje</h4>
+                        <div id="daily-hydration-status" class="text-center mb-4 p-3 bg-gray-900/50 rounded-lg"></div>
+                        <div class="flex items-center gap-4">
+                            <input type="number" id="hydration-log-input" class="w-full p-2 border border-gray-600 bg-gray-700 text-gray-200 rounded" placeholder="Nº de copos tomados agora">
+                            <button data-action="logDailyHydration" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded whitespace-nowrap">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    },
+    createMindsetHTML() { return `<h2 class="text-3xl font-bold mb-2 text-white">A Arquitetura da Mente</h2><p class="mb-8 text-lg text-gray-400">A fundação de qualquer transformação duradoura não reside no prato ou na academia, mas na mente.</p><div class="space-y-8">${this.data.mindset.map(item => `<div id="${item.id}-container" class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-2xl font-semibold mb-4 text-white">${item.title}</h3><div class="text-gray-400">${this.createMindsetSectionContent(item)}</div></div>`).join('')}</div>`; },
+    createMindsetSectionContent(item) {
+        switch(item.id) {
+            case 'habitLoop':
+                return `<p class="mb-6">${item.description}</p><div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">${Object.entries(item.items).map(([key, value]) => `<div class="habit-loop-item border-2 border-gray-600 p-4 rounded-lg cursor-pointer" data-action="toggleHabitContent" data-id="${key}"><h4 class="text-xl font-bold mb-2 pointer-events-none">${value.title}</h4></div>`).join('')}</div><div id="habit-loop-content-container" class="mt-4"></div>`;
+            case 'fiveWhys':
+                const whyPlaceholders = ["1. Ex: Quero ter mais energia.", "2. Ex: Para brincar com meus filhos.", "3. Ex: Para criar memórias felizes.", "4. Ex: Para me sentir mais presente.", "5. Ex: Para ser mais feliz no geral."];
+                let whysContent = '';
+                if (this.state.isEditingWhys) {
+                    whysContent = this.state.fiveWhys.map((why, i) => 
+                        `<input type="text" placeholder="${whyPlaceholders[i]}" class="why-input w-full p-2 border border-gray-600 bg-gray-700 text-gray-200 rounded mb-3" value="${why || ''}">`
+                    ).join('');
+                } else {
+                    whysContent = `<div class="space-y-3 text-gray-300 p-4 border-l-4 border-emerald-500 bg-gray-900/50 rounded-r-lg">
+                        ${this.state.fiveWhys.map((w, i) => w.trim() ? `<p><strong class="text-emerald-500">${i+1}.</strong> ${w}</p>` : '').join('')}
+                    </div>`;
+                }
+                const buttonText = this.state.isEditingWhys ? 'Salvar Meus Porquês' : 'Editar';
+                const buttonClass = this.state.isEditingWhys ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-gray-600 hover:bg-gray-500';
+
+                return `<p class="mb-4">${item.description}</p>
+                        <div id="five-whys-content" class="mb-4">${whysContent}</div>
+                        <button data-action="toggleFiveWhysEdit" class="${buttonClass} text-white font-bold py-2 px-4 rounded">${buttonText}</button>`;
+            default:
+                return item.content;
+        }
+    },
+    createNutritionHTML() { return `<h2 class="text-3xl font-bold mb-2 text-white">Alimentação Inteligente</h2><p class="mb-8 text-lg text-gray-400">Nutrição não é privação, mas escolhas conscientes.</p><div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8"><h3 class="text-2xl font-semibold mb-4 text-center text-white">Plano Alimentar Flexível</h3><div class="overflow-x-auto"><table class="w-full text-sm text-left text-gray-300"><thead class="bg-gray-700 text-gray-300" id="nutrition-table-head"></thead><tbody id="nutrition-table-body"></tbody></table></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="bg-gray-800 p-6 rounded-lg shadow-lg">${this.createFoodIdeasListHTML()}</div><div class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-2xl font-semibold mb-4 text-center text-white">Pilares Nutricionais</h3><div class="chart-container h-64 md:h-80"><canvas id="macro-chart"></canvas></div><p class="text-center mt-4 text-gray-400">Equilíbrio para energia e saciedade.</p></div></div>`; },
+    createFoodIdeasListHTML() { return `<h3 class="text-2xl font-semibold mb-2 text-white">Banco de Ideias</h3><p class="text-sm text-gray-400 mb-4">Use como inspiração para suas compras.</p><div class="space-y-3 max-h-96 overflow-y-auto pr-4">${Object.entries(this.data.foodIdeas).map(([cat, items]) => `<div class="mb-4"><h4 class="font-bold text-emerald-500">${cat}</h4>${items.map(item => `<div class="flex items-center mt-2"><input type="checkbox" id="${item.replace(/\s+/g, '-')}" class="h-4 w-4 text-emerald-500 rounded focus:ring-emerald-500"><label for="${item.replace(/\s+/g, '-')}" class="ml-2 text-gray-300">${item}</label></div>`).join('')}</div>`).join('')}</div>`; },
+    createWorkoutHTML() { return `<h2 class="text-3xl font-bold mb-2 text-white">Movimento Eficiente</h2><p class="mb-8 text-lg text-gray-400">Atividade física que combina força e alta intensidade para resultados máximos.</p><div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8"><h3 class="text-2xl font-semibold mb-4 text-white">Cronograma de Treino de 30 Dias</h3><p class="mb-4 text-gray-400">Clique em um dia para ver os detalhes. O ponto colorido indica seu feedback.</p><div id="workout-schedule" class="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-7 gap-2 text-center"></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-2xl font-semibold mb-4 text-white">Guia de Exercícios</h3><div class="space-y-4">${this.createExerciseGuideHTML()}</div></div><div class="bg-gray-800 p-6 rounded-lg shadow-lg"><h3 class="text-2xl font-semibold mb-4 text-center text-white">O Poder do HIIT</h3><div class="chart-container h-64 md:h-80"><canvas id="epoc-chart"></canvas></div></div></div>`; },
+    createExerciseGuideHTML() { return this.data.exercises.map(ex => `<div class="exercise-card bg-gray-900 p-4 rounded-lg border border-gray-700"><details><summary class="font-semibold cursor-pointer text-emerald-500">${ex.name}</summary><p class="mt-2 text-sm text-gray-400">${ex.description}</p><p class="mt-2 text-sm font-semibold text-orange-400">Erro comum: ${ex.error}</p></details></div>`).join(''); },
+    createSustainabilityHTML() { return `<h2 class="text-3xl font-bold mb-2 text-white">Além da Linha de Chegada</h2><p class="mb-8 text-lg text-gray-400">O verdadeiro sucesso é transformar as práticas em um estilo de vida.</p><div class="grid grid-cols-1 md:grid-cols-2 gap-6">${this.data.sustainability.map(item => `<div class="bg-gray-800 p-6 rounded-lg shadow-lg ${item.span ? 'md:col-span-2' : ''}"><h3 class="text-xl font-semibold text-white">${item.title}</h3><div class="mt-2 text-gray-300">${item.content}</div></div>`).join('')}</div>`; },
+    createProgressHTML() { return ` <h2 class="text-3xl font-bold mb-2 text-white">Seu Progresso</h2><p class="mb-8 text-lg text-gray-400">Acompanhe sua evolução e suas conquistas em um só lugar.</p><div class="grid grid-cols-1 lg:grid-cols-2 gap-8"><div class="bg-gray-800 p-6 rounded-lg shadow-lg"><div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-white">Histórico de Peso</h3><button data-action="clearWeightHistory" class="text-sm text-red-500 hover:text-red-400 font-semibold">Limpar Tudo</button></div><div id="weight-history-list" class="space-y-2 max-h-96 overflow-y-auto"></div></div><div class="bg-gray-800 p-6 rounded-lg shadow-lg"><div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-white">Histórico de Hidratação</h3><button data-action="clearHydrationHistory" class="text-sm text-red-500 hover:text-red-400 font-semibold">Limpar Tudo</button></div><div id="hydration-history-list" class="space-y-2 max-h-96 overflow-y-auto"></div></div></div><div class="mt-8"><h3 class="text-2xl font-bold text-white mb-4">Quadro de Conquistas</h3><div id="achievements-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>`;},
+    
+    // Data object
+    data: {
+        mindset: [ 
+            {
+                id: 'habitLoop',
+                title: 'O Loop do Hábito', 
+                description: 'Clique em cada etapa para desvendar como ela funciona e como você pode usá-la a seu favor.',
+                items: {
+                    trigger: { title: '1. Gatilho', description: 'O estímulo que inicia o hábito. Pode ser um local, uma emoção ou a hora do dia.' }, 
+                    routine: { title: '2. Rotina', description: 'A ação em si. O objetivo é substituir rotinas negativas por positivas.' }, 
+                    reward: { title: '3. Recompensa', description: 'O benefício que seu cérebro busca. Uma recompensa saudável fortalece o novo hábito.' } 
+                }
+            }, 
+            {
+                id: 'fiveWhys',
+                title: 'Encontre seu "Porquê"', 
+                description: 'Use o exercício dos "5 Porquês" para encontrar sua motivação real e profunda. Seja específico.'
+            },
+            {
+                id: 'emotionalHunger',
+                title: 'Vencendo a Autossabotagem',
+                content: '<p class="mb-4">Reconhecer a diferença entre fome física e emocional é vital.</p><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="border border-emerald-500/30 p-4 rounded-lg bg-emerald-900/20"><h4 class="font-bold text-emerald-400">Fome Física ✅</h4><ul class="list-disc list-inside mt-2 text-gray-300"><li>Surge gradualmente</li><li>Não é seletiva</li><li>Para com a saciedade</li><li>Gera satisfação</li></ul></div><div class="border border-red-500/30 p-4 rounded-lg bg-red-900/20"><h4 class="font-bold text-red-400">Fome Emocional ⚠️</h4><ul class="list-disc list-inside mt-2 text-gray-300"><li>Aparece de repente</li><li>Pede algo específico</li><li>Não para mesmo cheio</li><li>Gera culpa</li></ul></div></div>'
+            }
+        ],
+        sustainability: [ 
+            {title: 'Erros Comuns', content: '<ul class="mt-2 space-y-2"><li class="p-3 bg-red-900/20 rounded-md"><strong class="text-red-400">Pular refeições:</strong> Retarda o metabolismo e aumenta a fome depois.</li><li class="p-3 bg-red-900/20 rounded-md"><strong class="text-red-400">Exagerar no FDS:</strong> Um dia de excessos pode anular o esforço da semana. Use a regra 80/20.</li><li class="p-3 bg-red-900/20 rounded-md"><strong class="text-red-400">Focar só na balança:</strong> O peso flutua. Tire fotos e medidas para ver o progresso real.</li></ul>'}, 
+            {title: 'Vida Social', content: '<ul class="mt-2 space-y-2 text-gray-300 list-disc list-inside"><li>Planeje: olhe o cardápio do restaurante antes.</li><li>Escolha bem: prefira grelhados e saladas.</li><li>Modere: não precisa comer de tudo. Faça uma refeição livre, não um dia livre.</li><li>Hidrate-se: beba água entre as bebidas alcoólicas.</li><li>Foque nas pessoas, não na comida.</li></ul>'},
+            {title: 'Transformando em Estilo de Vida', content: '<p class="mt-2 text-gray-400">Parabéns por completar os 30 dias! A jornada não acaba, ela evolui. Reflita sobre os hábitos que você mais gostou e que são fáceis de manter. Defina novas metas, como correr 5km ou aprender uma nova receita saudável. E o mais importante: seja gentil com você mesmo. Se um dia sair do plano, retome na próxima refeição, sem culpa. Você construiu uma base sólida. Continue construindo sobre ela.</p>', span: true}
+        ],
+        foodIdeas: { '✅ Carboidratos': ['Batata-doce', 'Arroz integral', 'Aveia', 'Quinoa', 'Pão integral'], '✅ Proteínas': ['Peito de frango', 'Ovos', 'Carne magra (patinho)', 'Tilápia', 'Iogurte natural'], '✅ Gorduras Boas': ['Abacate', 'Azeite de oliva', 'Castanhas', 'Pasta de amendoim'] },
+        nutrition: {
+            lose: { meals: ['Café', 'Lanche', 'Jantar'], options: {
+                'café': [{name: 'Ovos mexidos', key: 'ovosMexidos'}, {name: 'Iogurte com fruta', key: 'iogurteFruta'}, {name: 'Mamão com aveia', key: 'mamaoAveia'}, {name: 'Pão com queijo minas', key: 'paoQueijo'}],
+                'lanche': [{name: 'Maçã'}, {name: 'Banana'}, {name: 'Amêndoas (10g)'}, {name: 'Laranja'}],
+                'jantar': [{name: 'Sopa de legumes', key: 'sopaLegumes'}, {name: 'Omelete com salada', key: 'omeleteSalada'}, {name: 'Tilápia com brócolis', key: 'tilapiaBrocolis'}, {name: 'Salada com atum', key: 'saladaAtum'}]
+            }},
+            gain: { meals: ['Café', 'Almoço', 'Lanche', 'Jantar'], options: {
+                'café': [{name: 'Vitamina de banana', key: 'vitaminaBanana'}, {name: 'Cuscuz com ovo', key: 'cuscuzOvo'}, {name: 'Pão com ovos e queijo', key: 'paoOvosQueijo'}, {name: 'Crepioca de frango', key: 'crepiocaFrango'}],
+                'almoço': [{name: 'Arroz, feijão e bife'}, {name: 'Macarrão à bolonhesa'}, {name: 'Frango com purê'}, {name: 'Baião de dois'}],
+                'lanche': [{name: 'Pão com pasta de amendoim'}, {name: 'Açaí com frutas'}, {name: 'Vitamina de abacate'}, {name: 'Iogurte com mel'}],
+                'jantar': [{name: 'Prato similar ao almoço'}, {name: 'Omelete reforçado', key: 'omeleteSalada'}, {name: 'Sopa de mandioquinha', key: 'sopaLegumes'}, {name: 'Pão com carne moída'}]
+            }}
+        },
+        recipes: {
+            ovosMexidos: { title: 'Ovos Mexidos Fit', ingredients: ['2 ovos', 'Sal e pimenta a gosto', '1 fio de azeite'], steps: ['Bata os ovos em uma tigela.', 'Aqueça o azeite em uma frigideira.', 'Despeje os ovos e mexa até atingir a consistência desejada. Tempere.'] },
+            crepiocaFrango: { title: 'Crepioca de Frango', ingredients: ['1 ovo', '2 col. de goma de tapioca', '30g de frango desfiado', 'Sal a gosto'], steps: ['Misture o ovo e a goma de tapioca.', 'Despeje na frigideira antiaderente em fogo baixo.', 'Quando firmar, adicione o frango e dobre.'] },
+            sopaLegumes: { title: 'Sopa de Legumes com Frango', ingredients:['1 cenoura', '1 batata pequena', '1/2 abobrinha', '50g de frango desfiado', 'Temperos a gosto'], steps: ['Cozinhe os legumes picados em água.', 'Quando estiverem macios, bata no liquidificador (ou amasse).', 'Volte ao fogo, adicione o frango e os temperos. Ferva por 5 min.'] },
+            iogurteFruta: { title: 'Iogurte com Fruta', ingredients:['1 pote de iogurte natural desnatado', '1/2 fruta picada (ex: maçã, morangos)', 'Opcional: 1 col. de aveia'], steps: ['Misture todos os ingredientes em uma tigela.']},
+            mamaoAveia: { title: 'Mamão com Aveia', ingredients:['1 fatia de mamão formosa', '1 colher de sopa de aveia em flocos'], steps: ['Pique o mamão e cubra com a aveia.']},
+            paoQueijo: { title: 'Pão Integral com Queijo Minas', ingredients:['1 fatia de pão 100% integral', '1 fatia de queijo minas frescal', 'Orégano a gosto'], steps:['Coloque o queijo sobre o pão e salpique orégano.', 'Leve à sanduicheira ou frigideira para aquecer.']},
+            omeleteSalada: { title: 'Omelete com Salada', ingredients:['2 ovos', 'Vegetais picados (tomate, cebola)', 'Sal a gosto', 'Folhas verdes para acompanhar'], steps:['Bata os ovos e misture os vegetais.', 'Cozinhe em frigideira antiaderente.', 'Sirva com uma salada de folhas verdes.']},
+            tilapiaBrocolis: { title: 'Tilápia com Brócolis', ingredients:['1 filé de tilápia (120g)', '1 xícara de brócolis cozido', 'Limão, sal e alho para temperar'], steps:['Tempere o peixe com limão, sal e alho.', 'Grelhe o filé em uma frigideira.', 'Sirva com o brócolis no vapor.']},
+            saladaAtum: { title: 'Salada Completa com Atum', ingredients:['Folhas verdes variadas', '1/2 lata de atum em água', 'Tomate cereja, cenoura ralada', 'Azeite para temperar'], steps:['Monte um prato com as folhas e vegetais.', 'Adicione o atum por cima.', 'Regue com um fio de azeite.']},
+            vitaminaBanana: { title: 'Vitamina de Banana', ingredients:['1 banana prata', '200ml de leite', '1 col. de sopa de aveia'], steps:['Bata todos os ingredientes no liquidificador.']},
+            cuscuzOvo: { title: 'Cuscuz com Ovo', ingredients:['3 col. de sopa de flocão de milho', 'Água para hidratar', '1 ovo frito ou cozido', 'Sal a gosto'], steps:['Hidrate o cuscuz com água e sal por 5 min.', 'Cozinhe no vapor (cuscuzeira).', 'Sirva com o ovo por cima.']}
+        },
+        achievements: [
+            { id: 'primeiroPasso', title: 'Primeiro Passo', description: 'Deixou seu primeiro feedback diário.', icon: '👟', condition: (state) => Object.keys(state.dailyFeedback).length >= 1 },
+            { id: 'semanaPerfeita', title: 'Semana Perfeita', description: 'Registrou feedback por 7 dias seguidos.', icon: '🌟', condition: (state) => { let c = 0; for(let i=1; i<=30; i++) { c = state.dailyFeedback[i] ? c+1 : 0; if (c>=7) return true; } return false; } },
+            { id: 'hidratacaoMestre', title: 'Mestre da Hidratação', description: 'Atingiu a meta de hidratação 3 dias seguidos.', icon: '🌊', condition: (state) => { let c = 0; const history = [...state.hydrationHistory].sort((a,b) => new Date(a.date) - new Date(b.date)); for(let i = 0; i < history.length; i++) { if(i > 0 && (new Date(history[i].date).getTime() - new Date(history[i-1].date).getTime() > 86400000 * 1.5)) c = 0; c = history[i].glasses*250 >= state.hydrationGoal ? c+1 : 0; if (c >= 3) return true; } return false; }},
+            { id: 'chefFit', title: 'Chef Fit', description: 'Abriu 3 receitas diferentes para se inspirar.', icon: '🧑‍🍳', condition: (state) => state.openedRecipes.size >= 3 },
+            { id: 'focoTotal', title: 'Foco Total', description: 'Registrou "Tudo Certo" por 3 dias seguidos.', icon: '🎯', condition: (state) => { let c = 0; for(let i=1; i<=30; i++) { c = state.dailyFeedback[i] === 'all_done' ? c+1 : 0; if (c>=3) return true; } return false; } },
+            { id: 'meiaJornada', title: 'Meia Jornada', description: 'Registrou feedback em 15 dias diferentes.', icon: '🏁', condition: (state) => Object.keys(state.dailyFeedback).length >= 15 },
+            { id: 'guerreiroFDS', title: 'Guerreiro(a) do FDS', description: 'Registrou feedback em um Sábado e Domingo.', icon: '🛡️', condition: (state) => { const days = new Set(Object.keys(state.dailyFeedback).map(day => new Date(2024, 0, day).getDay())); return (days.has(6) || days.has(0)); }},
+            { id: 'explorador', title: 'Explorador(a)', description: 'Visitou todas as seções do app.', icon: '🗺️', condition: (state) => state.visitedViews.size >= 6 },
+            { id: 'metaBatida', title: 'Meta Batida!', description: 'Atingiu seu peso ideal. Parabéns!', icon: '🏆', condition: (state) => { const w = state.weightHistory[0]?.weight; const g = state.goalWeight; return w && g && (state.objective === 'lose' ? w <= g : w >= g); } }
+        ],
+        workout: { 
+            schedule: [ 'forcaA', 'hiitLeve', 'descansoAtivo', 'forcaB', 'hiitLeve', 'descansoAtivo', 'descansoTotal', 'forcaA', 'hiitMod', 'descansoAtivo', 'forcaB', 'hiitMod', 'descansoAtivo', 'descansoTotal', 'forcaA', 'hiitMod', 'descansoAtivo', 'forcaB', 'hiitIntenso', 'descansoAtivo', 'descansoTotal', 'forcaA', 'hiitIntenso', 'descansoAtivo', 'forcaB', 'desafioFinal', 'descansoAtivo', 'descansoTotal', 'forcaA', 'hiitMod' ], 
+            details: { forcaA: { title: 'Força A', description: '3x15 Agachamentos + 3x15 Abdominais.' }, forcaB: { title: 'Força B', description: '3x10 Flexões (joelhos) + 3x12 Afundos.' }, hiitLeve: { title: 'HIIT Leve', description: '15 min: 40s Polichinelos + 20s descanso.' }, hiitMod: { title: 'HIIT Moderado', description: '15 min: 40s Corrida Parada + 20s descanso.' }, hiitIntenso: { title: 'HIIT Intenso', description: '15 min: 40s Agach. c/ Salto + 20s descanso.' }, desafioFinal: { title: 'Desafio Final', description: '20 min: 40s Burpees + 20s descanso.' }, descansoAtivo: { title: 'Descanso Ativo', description: 'Caminhada leve de 20-30 min.' }, descansoTotal: { title: 'Descanso Total', description: 'Recuperação completa. Essencial!' } } 
+        },
+        exercises: [ 
+            { name: 'Agachamento', description: 'Desça o quadril para trás e para baixo, mantendo a coluna reta.', error: 'Deixar os joelhos irem para dentro.' }, 
+            { name: 'Flexão de Braços', description: 'Com joelhos ou não, mantenha o corpo reto e baixe o peito ao solo.', error: 'Deixar o quadril cair ou levantar.' }, 
+            { name: 'Abdominal', description: 'Eleve o tronco em direção aos joelhos, sem forçar o pescoço.', error: 'Forçar o pescoço com as mãos.' } 
+        ]
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => app.init());
+</script>
+</body>
+</html>

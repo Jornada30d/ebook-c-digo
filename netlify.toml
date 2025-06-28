@@ -1,0 +1,27 @@
+# Configuração de build e funções
+[build]
+  # O diretório que a Netlify deve publicar. "." significa a raiz do projeto.
+  publish = "."
+
+[functions]
+  # O diretório onde suas funções serverless ficarão.
+  directory = "netlify/functions/"
+  node_bundler = "esbuild"
+
+# --- REGRAS DE REDIRECIONAMENTO ---
+# Esta é a nova forma que estamos usando.
+
+# Regra 1: Se um usuário NÃO estiver logado...
+[[redirects]]
+  from = "/desafio/*"
+  to = "/login/"
+  status = 302
+  force = true
+  conditions = {Role = ["!member"]} # Redireciona se o usuário NÃO tem a role "member"
+
+# Regra 2: Se um usuário ESTIVER logado...
+[[redirects]]
+  from = "/desafio/*"
+  to = "/desafio/index.html"
+  status = 200
+  force = true
