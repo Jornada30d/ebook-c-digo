@@ -4,14 +4,18 @@ exports.handler = async (event) => {
   try {
     const kiwifyPayload = JSON.parse(event.body);
 
-    // --- NOSSA NOVA LINHA DE INVESTIGAÇÃO ---
-    // Esta linha vai imprimir todos os dados recebidos no log da Netlify.
-    console.log(JSON.stringify(kiwifyPayload, null, 2));
+    // --- CORREÇÃO: Lendo os dados da forma correta ---
+    // Usamos os nomes exatos que vimos no log, incluindo letras maiúsculas.
+    const eventType = kiwifyPayload.webhook_event_type;
+    const productName = kiwifyPayload.Product.product_name;
+    const customerEmail = kiwifyPayload.Customer.email;
     
-    // O resto do código permanece igual.
-    if (kiwifyPayload.event === 'order.paid' && kiwifyPayload.product.name === 'Ebook interativo " como criar o habito de treinar em 30 dias"') {
-      const customerEmail = kiwifyPayload.customer.email;
+    // --- CORREÇÃO: Verificando o evento e o nome do produto ---
+    // Verificamos se o evento é "order_approved" (como no log)
+    // E se o nome do produto é o seu nome real OU o nome do produto de teste.
+    if (eventType === 'order_approved' && (productName === 'Ebook interativo " como criar o habito de treinar em 30 dias"' || productName === 'Example product')) {
 
+      // O resto do código para convidar o usuário permanece o mesmo
       const NETLIFY_API_URL = `https://api.netlify.com/api/v1/sites/${process.env.SITE_ID}/identity/invite`;
       const NETLIFY_ACCESS_TOKEN = process.env.NETLIFY_API_ACCESS_TOKEN;
 
@@ -27,9 +31,11 @@ exports.handler = async (event) => {
         }),
       });
 
+      console.log(`Convite enviado com sucesso para: ${customerEmail}`);
       return { statusCode: 200, body: 'Convite de usuário processado com sucesso.' };
     }
 
+    console.log('Evento ignorado:', eventType, productName);
     return { statusCode: 200, body: 'Evento não relevante, ignorado.' };
 
   } catch (error) {
