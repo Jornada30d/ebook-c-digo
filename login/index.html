@@ -5,66 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Tailwind CSS para estilização -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Fonte 'Inter' do Google Fonts, a mesma do seu site principal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Carrega o Widget de Login da Netlify -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
     <style>
-      /* Estilização base */
+      /* Estilização base para corresponder ao design do site */
       body {
         font-family: 'Inter', sans-serif;
         background-color: #111827; /* bg-gray-900 */
       }
 
-      /* --- ESTILIZAÇÃO AVANÇADA DO NETLIFY IDENTITY WIDGET --- */
+      /* --- ESTILIZAÇÃO AVANÇADA DO NETLIFY IDENTITY WIDGET (VERSÃO REFORÇADA) --- */
       /* Usamos um ID (#login-container) para aumentar a especificidade e forçar a sobreposição dos estilos */
       
-      /* Cor de fundo do modal e do formulário (remove o branco padrão) */
-      #login-container .modal-content,
-      #login-container section {
-        background-color: transparent !important;
+      /* Botões principais (Log In, Sign Up) */
+      #login-container .netlify-identity-button {
+        background-color: #10B981 !important; /* bg-emerald-500 */
         border: none !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-      }
-      
-      /* --- BOTÕES PRINCIPAIS (Login / Sign Up) --- */
-      /* Este seletor garante que qualquer botão dentro do formulário seja estilizado */
-      #login-container .netlify-identity-form button {
-        background-color: #10B981 !important; /* Verde padrão do site (bg-emerald-500) */
-        border: none !important;
-        border-radius: 0.5rem !important; /* 8px */
-        padding: 0.75rem 1rem !important; /* 12px 16px */
+        border-radius: 0.5rem !important;
+        padding: 0.75rem 1rem !important;
         color: white !important;
         transition: background-color 0.3s ease !important;
         width: 100% !important;
         text-align: center !important;
         font-weight: 600 !important;
-        margin-top: 0.5rem !important; /* Espaçamento superior */
+      }
+      #login-container .netlify-identity-button:hover {
+        background-color: #059669 !important; /* bg-emerald-600 */
       }
       
-      #login-container .netlify-identity-form button:hover {
-        background-color: #059669 !important; /* Verde mais escuro no hover (bg-emerald-600) */
-      }
-
-      /* --- LINK SECUNDÁRIO (Alternar para Login / Sign Up) --- */
-      /* O container que envolve o link */
+      /* Container dos links secundários */
       #login-container .netlify-identity-form-note {
         text-align: center !important;
-        margin-top: 1.5rem !important; /* 24px */
+        margin-top: 1.5rem !important;
       }
-      
-      /* O próprio link */
+
+      /* Links secundários (Ex: "Need an account?") */
       #login-container .netlify-identity-form-note a {
         display: inline-block !important;
         width: 100% !important;
         background-color: transparent !important;
-        border: 2px solid #10B981 !important; /* Borda verde */
-        color: #10B981 !important; /* Texto verde */
+        border: 2px solid #10B981 !important;
+        color: #10B981 !important;
         border-radius: 0.5rem !important;
         padding: 0.75rem 1rem !important;
         text-decoration: none !important;
@@ -73,11 +63,11 @@
       }
 
       #login-container .netlify-identity-form-note a:hover {
-        background-color: #10B981 !important; /* Fundo verde no hover */
-        color: white !important; /* Texto branco no hover */
+        background-color: #10B981 !important;
+        color: white !important;
       }
 
-      /* --- CAMPOS DE INPUT (Email, Senha) --- */
+      /* Campos de input (email, senha) */
       #login-container .netlify-identity-input {
         background-color: #374151 !important; /* bg-gray-700 */
         border: 1px solid #4B5563 !important; /* border-gray-600 */
@@ -86,83 +76,49 @@
         padding: 0.75rem !important;
         margin-bottom: 1rem !important;
       }
-      
       #login-container .netlify-identity-input:focus {
         border-color: #10B981 !important;
-        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.5) !important;
+        box-shadow: none !important;
       }
-      
-      /* Esconde cabeçalhos e textos desnecessários do widget */
-      #login-container .netlify-identity-menu-text,
-      #login-container .modal-header,
-      #login-container .netlify-identity-label {
-          display: none !important;
+
+      /* Remove o fundo branco do container do formulário */
+      #login-container section {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
       }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
+    <!-- Card de Login -->
     <div class="w-full max-w-sm mx-auto bg-gray-800 rounded-xl shadow-2xl p-8 space-y-6">
         <div class="text-center">
             <h1 class="text-2xl font-bold text-emerald-400">Jornada 30 Dias</h1>
             <p class="text-gray-400 mt-2">Acesso à sua área exclusiva</p>
         </div>
 
+        <!-- Container com ID para reforçar os estilos -->
         <div id="login-container">
+            <!-- O widget de login da Netlify será inserido aqui -->
             <div data-netlify-identity-menu></div>
         </div>
     </div>
 
+    <!-- Script de redirecionamento (inalterado e funcional) -->
     <script type="text/javascript">
-      if (window.netlifyIdentity) {
-        netlifyIdentity.on('init', user => {
-          if (!user) {
-            netlifyIdentity.on('login', () => {
-              document.location.href = '/desafio/';
-            });
-          }
-        });
-      }
-    </script>
-    
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Seleciona o container onde o widget será renderizado
-      const loginContainer = document.getElementById('login-container');
-      
-      if (loginContainer) {
-        // Cria um "observador" que reage a mudanças dentro do #login-container
-        // Ele vai agir assim que o Netlify Identity adicionar os botões
-        const observer = new MutationObserver((mutations) => {
-          // Procura pelos botões de 'Log In' e 'Sign Up'
-          const loginButton = document.querySelector('.netlify-identity-button.btn-primary');
-          const signupButton = document.querySelector('.netlify-identity-button.btn-primary'); // O mesmo seletor geralmente se aplica
-          const actionButtons = document.querySelectorAll('#login-container .netlify-identity-form button');
+      const redirectToContent = () => {
+        window.location.replace('/desafio/');
+      };
 
-          if (actionButtons.length > 0) {
-            // Aplica os estilos a todos os botões encontrados para garantir
-            actionButtons.forEach(button => {
-                button.style.backgroundColor = '#10B981';
-                button.style.color = 'white';
-                button.style.width = '100%';
-                button.style.justifyContent = 'center';
-                button.style.borderRadius = '0.5rem';
-                button.style.fontWeight = '600';
-                button.style.border = 'none';
-                button.style.padding = '0.75rem 1rem';
-            });
-            // Uma vez que os botões foram estilizados, podemos parar de observar para não gastar recursos
-            observer.disconnect(); 
-          }
-        });
-
-        // Inicia a observação, monitorando a adição de novos elementos filhos
-        observer.observe(loginContainer, {
-          childList: true,
-          subtree: true
-        });
+      if (netlifyIdentity.currentUser()) {
+        redirectToContent();
       }
-    });
+
+      netlifyIdentity.on('login', user => {
+        redirectToContent();
+      });
     </script>
 </body>
 </html>
