@@ -9,14 +9,14 @@ exports.handler = async (event) => {
 
     // Lemos os dados da forma correta.
     const eventType = kiwifyPayload.webhook_event_type;
-    const productName = kiwifyPayload.Product.product_name;
     const customerEmail = kiwifyPayload.Customer.email;
+    const productId = kiwifyPayload.Product.product_id;
     
-    // --- CORREÇÃO FINAL NO NOME DO PRODUTO ---
-    // O nome agora é uma correspondência exata, sem o espaço extra.
-    const expectedProductName = 'Ebook interativo "como criar o habito de treinar em 30 dias"';
+    // --- CORREÇÃO FINAL: USANDO O ID DO PRODUTO ---
+    // Este ID é único e nunca muda. É a forma mais segura de verificar.
+    const expectedProductId = '909edec0-4fae-11f0-9d11-ad6e516f6910';
     
-    if (eventType === 'order_approved' && (productName === expectedProductName || productName === 'Example product')) {
+    if (eventType === 'order_approved' && productId === expectedProductId) {
 
       const NETLIFY_API_URL = `https://api.netlify.com/api/v1/sites/${process.env.SITE_ID}/identity/invite`;
       const NETLIFY_ACCESS_TOKEN = process.env.NETLIFY_API_ACCESS_TOKEN;
@@ -37,7 +37,8 @@ exports.handler = async (event) => {
       return { statusCode: 200, body: 'Convite de usuário processado com sucesso.' };
     }
 
-    console.log(`Evento ignorado. Tipo: ${eventType}, Produto: ${productName}`);
+    // Mantemos o log para o caso de algum outro evento chegar.
+    console.log(`Evento ignorado. Tipo: ${eventType}, ID do Produto: ${productId}`);
     return { statusCode: 200, body: 'Evento não relevante, ignorado.' };
 
   } catch (error) {
@@ -45,5 +46,6 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: 'Erro interno do servidor.' };
   }
 };
+
 
 
