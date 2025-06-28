@@ -8,15 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
     <style>
-      /* Estilos base, SÓ para o layout do card */
+      /* Estilos base para o layout do card */
       body {
         font-family: 'Inter', sans-serif;
-        background-color: #111827; /* bg-gray-900 */
+        background-color: #111827;
       }
-      /* Removemos quase todo o CSS daqui para confiar 100% no JavaScript para a estilização do widget */
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -26,11 +26,11 @@
             <h1 class="text-2xl font-bold text-emerald-400">Jornada 30 Dias</h1>
             <p class="text-gray-400 mt-2">Acesso à sua área exclusiva</p>
         </div>
-
         <div id="login-container" data-netlify-identity-menu></div>
     </div>
 
     <script type="text/javascript">
+      // Script de redirecionamento (inalterado)
       if (window.netlifyIdentity) {
         netlifyIdentity.on('login', user => {
           window.location.replace('/desafio/');
@@ -42,57 +42,42 @@
     </script>
 
     <script>
-    // Função que aplica os estilos desejados
-    function styleNetlifyWidget() {
-      // **IMPORTANTE**: Verifique no "Inspecionar Elemento" se a classe do botão é realmente '.btn-primary'.
-      // Se for diferente, troque o seletor abaixo pelo que você encontrou.
-      const buttons = document.querySelectorAll('#login-container .btn-primary');
+    document.addEventListener('DOMContentLoaded', () => {
+      // O seletor exato para o botão que você encontrou no 'Inspecionar'.
+      // Geralmente é '.btn-primary' dentro do formulário de identidade.
+      const buttonSelector = '#login-container .netlify-identity-form .btn-primary';
       
-      if (buttons.length > 0) {
-        buttons.forEach(button => {
-          // Força a aplicação dos estilos diretamente no elemento
+      // Cria um "vigia" que executa a cada 100 milissegundos
+      const watcher = setInterval(() => {
+        const button = document.querySelector(buttonSelector);
+        
+        // Se o botão FINALMENTE for encontrado...
+        if (button) {
+          // 1. Aplica todos os estilos de uma vez!
           button.style.setProperty('background-color', '#10B981', 'important');
           button.style.setProperty('border', 'none', 'important');
           button.style.setProperty('border-radius', '0.5rem', 'important');
           button.style.setProperty('color', 'white', 'important');
           button.style.setProperty('font-weight', '600', 'important');
           button.style.setProperty('width', '100%', 'important');
-          button.style.setProperty('text-align', 'center', 'important');
-          button.style.setProperty('padding', '0.75rem 1rem', 'important');
-        });
-      }
+          
+          console.log('Botão da Netlify encontrado e estilizado com sucesso!');
 
-      // Estiliza o link secundário (Ex: "Already have an account? Log in")
-      const noteLink = document.querySelector('#login-container .netlify-identity-form-note a');
-      if (noteLink) {
-          noteLink.style.setProperty('display', 'inline-block', 'important');
-          noteLink.style.setProperty('width', '100%', 'important');
-          noteLink.style.setProperty('background-color', 'transparent', 'important');
-          noteLink.style.setProperty('border', '2px solid #10B981', 'important');
-          noteLink.style.setProperty('color', '#10B981', 'important');
-          noteLink.style.setProperty('border-radius', '0.5rem', 'important');
-          noteLink.style.setProperty('padding', '0.75rem 1rem', 'important');
-          noteLink.style.setProperty('text-align', 'center', 'important');
-          noteLink.style.setProperty('margin-top', '1.5rem', 'important');
-      }
-
-      // Estiliza os inputs
-      const inputs = document.querySelectorAll('#login-container .netlify-identity-input');
-      inputs.forEach(input => {
-          input.style.setProperty('background-color', '#374151', 'important');
-          input.style.setProperty('border', '1px solid #4B5563', 'important');
-          input.style.setProperty('color', '#F3F4F6', 'important');
-      });
-    }
-
-    // Ouve os eventos do widget da Netlify
-    if (window.netlifyIdentity) {
-      // Tenta estilizar quando o widget é aberto (seja para login ou signup)
-      netlifyIdentity.on('open', () => {
-        // Usa um pequeno atraso para garantir que os elementos já foram renderizados
-        setTimeout(styleNetlifyWidget, 100);
-      });
-    }
+          // 2. PARA o vigia para não gastar recursos do navegador desnecessariamente.
+          clearInterval(watcher);
+          
+          // Opcional: Estilize outros elementos aqui também, se necessário
+          // Exemplo: estilizar o link secundário
+          const noteLink = document.querySelector('#login-container .netlify-identity-form-note a');
+          if (noteLink) {
+              noteLink.style.setProperty('border', '2px solid #10B981', 'important');
+              noteLink.style.setProperty('color', '#10B981', 'important');
+              // ... outros estilos para o link
+          }
+        }
+      }, 100); // O vigia verifica a cada 100ms
+    });
     </script>
+
 </body>
 </html>
