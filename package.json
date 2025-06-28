@@ -1,0 +1,23 @@
+{
+  "name": "ebook-codigo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jornada30d/ebook-c-digo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jornada30d/ebook-c-digo/issues"
+  },
+  "homepage": "https://github.com/Jornada30d/ebook-c-digo#readme",
+  "description": "",
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
