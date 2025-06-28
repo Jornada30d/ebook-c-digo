@@ -1,27 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Login - Acesso ao Desafio 30 Dias</title>
+    <title>Login - Acesso à Jornada 30 Dias</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind CSS para estilização -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonte 'Inter' do Google Fonts, a mesma do seu site principal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <!-- Carrega o Widget de Login da Netlify -->
     <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
     <style>
-      body { font-family: sans-serif; background-color: #111827; display: grid; place-content: center; min-height: 100vh; margin: 0; color: white; }
-      /* Estiliza o container do widget */
-      .container { max-width: 400px; padding: 20px; }
+      /* Estilização base para corresponder ao design do site */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #111827; /* bg-gray-900 */
+      }
+
+      /* --- ESTILIZAÇÃO AVANÇADA DO NETLIFY IDENTITY WIDGET (VERSÃO REFORÇADA) --- */
+      /* Usamos um ID (#login-container) para aumentar a especificidade e forçar a sobreposição dos estilos */
+      
+      /* Botões principais (Log In, Sign Up) */
+      #login-container .netlify-identity-button {
+        background-color: #10B981 !important; /* bg-emerald-500 */
+        border: none !important;
+        border-radius: 0.5rem !important;
+        padding: 0.75rem 1rem !important;
+        color: white !important;
+        transition: background-color 0.3s ease !important;
+        width: 100% !important;
+        text-align: center !important;
+        font-weight: 600 !important;
+      }
+      #login-container .netlify-identity-button:hover {
+        background-color: #059669 !important; /* bg-emerald-600 */
+      }
+      
+      /* Container dos links secundários */
+      #login-container .netlify-identity-form-note {
+        text-align: center !important;
+        margin-top: 1.5rem !important;
+      }
+
+      /* Links secundários (Ex: "Need an account?") */
+      #login-container .netlify-identity-form-note a {
+        display: inline-block !important;
+        width: 100% !important;
+        background-color: transparent !important;
+        border: 2px solid #10B981 !important;
+        color: #10B981 !important;
+        border-radius: 0.5rem !important;
+        padding: 0.75rem 1rem !important;
+        text-decoration: none !important;
+        font-weight: 500 !important;
+        transition: all 0.3s ease !important;
+      }
+
+      #login-container .netlify-identity-form-note a:hover {
+        background-color: #10B981 !important;
+        color: white !important;
+      }
+
+      /* Campos de input (email, senha) */
+      #login-container .netlify-identity-input {
+        background-color: #374151 !important; /* bg-gray-700 */
+        border: 1px solid #4B5563 !important; /* border-gray-600 */
+        color: #F3F4F6 !important; /* text-gray-100 */
+        border-radius: 0.5rem !important;
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+      }
+      #login-container .netlify-identity-input:focus {
+        border-color: #10B981 !important;
+        box-shadow: none !important;
+      }
+
+      /* Remove o fundo branco do container do formulário */
+      #login-container section {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
     </style>
 </head>
-<body>
-    <div class="container">
-      <h1 style="text-align: center;">Acesso à Jornada 30 Dias</h1>
-      <!-- O widget de login será inserido aqui -->
-      <div data-netlify-identity-menu></div>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Card de Login -->
+    <div class="w-full max-w-sm mx-auto bg-gray-800 rounded-xl shadow-2xl p-8 space-y-6">
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-emerald-400">Jornada 30 Dias</h1>
+            <p class="text-gray-400 mt-2">Acesso à sua área exclusiva</p>
+        </div>
+
+        <!-- Container com ID para reforçar os estilos -->
+        <div id="login-container">
+            <!-- O widget de login da Netlify será inserido aqui -->
+            <div data-netlify-identity-menu></div>
+        </div>
     </div>
+
+    <!-- Script de redirecionamento (inalterado e funcional) -->
     <script type="text/javascript">
-      // Se o usuário já estiver logado, redireciona para a área de membros
-      if (netlifyIdentity.currentUser()) {
+      const redirectToContent = () => {
         window.location.replace('/desafio/');
+      };
+
+      if (netlifyIdentity.currentUser()) {
+        redirectToContent();
       }
+
+      netlifyIdentity.on('login', user => {
+        redirectToContent();
+      });
     </script>
 </body>
 </html>
