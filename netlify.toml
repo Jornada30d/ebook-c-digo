@@ -1,37 +1,12 @@
-# Configuração de build e funções
 [build]
-  # O diretório que a Netlify deve publicar. "." significa a raiz do projeto.
   publish = "."
 
 [functions]
-  # O diretório onde suas funções serverless ficarão.
   directory = "netlify/functions/"
   node_bundler = "esbuild"
 
-# --- REGRAS DE REDIRECIONAMENTO ---
-# A ordem aqui é importante.
-
-# Regra 1: Redireciona para o login se o usuário tentar acessar a área protegida
-# e NÃO tiver a permissão (role) de "member".
-[[redirects]]
-  from = "/desafio/*"
-  to = "/login/"
-  status = 302
-  force = true
-  conditions = {Role = ["!member"]}
-
-# Regra 2: Permite que usuários logados com a permissão "member" acessem o conteúdo.
-# Isso serve o arquivo /desafio/index.html sem mudar a URL no navegador.
-[[redirects]]
-  from = "/desafio/*"
-  to = "/desafio/index.html"
-  status = 200
-  force = true
-
-# Regra 3 (Bônus de Segurança): Se alguém acessar a raiz do site (seusite.com/),
-# redireciona para a página de login também.
-[[redirects]]
-  from = "/"
-  to = "/login/"
-  status = 302
-  force = true
+# Nova secção para a nossa "porta de segurança"
+[[edge_functions]]
+  # Para qualquer página dentro de /desafio/, execute a nossa função de proteção
+  path = "/desafio/*"
+  function = "auth-protector"

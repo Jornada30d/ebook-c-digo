@@ -18,6 +18,8 @@
   "homepage": "https://github.com/Jornada30d/ebook-c-digo#readme",
   "description": "",
   "dependencies": {
+    "@auth0/auth0-spa-js": "^2.2.0",
+    "auth0": "^4.26.0",
     "node-fetch": "^2.7.0"
   }
 }
